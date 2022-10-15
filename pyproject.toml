@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "systemy-rozproszone"
+version = "0.1.0"
+description = "Projekt zaliczeniowy na systemy rozproszone"
+authors = ["Piotr Bednarek"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "systemy_rozproszone"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.85.1"
+black = "^22.10.0"
+uvicorn = "^0.18.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
