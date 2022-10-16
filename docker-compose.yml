@@ -8,3 +8,12 @@ services:
   ports:
     - "8000:8000"
   restart: always
+ app_frontend:
+  build: ./frontend
+  container_name: app_frontend
+  command: npm run serve
+  ports:
+    - "8080:8080"
+  depends_on:
+    - "app_backend"
+  restart: always
