@@ -11,9 +11,9 @@ services:
  app_frontend:
   build: ./frontend
   container_name: app_frontend
-  command: npm run serve
+  # command: nginx
   ports:
-    - "8080:8080"
+    - "80:80"
   depends_on:
     - "app_backend"
   restart: always
