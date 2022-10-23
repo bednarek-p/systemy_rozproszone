@@ -5,7 +5,6 @@ description = "Projekt zaliczeniowy na systemy rozproszone"
 authors = ["Piotr Bednarek"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "systemy_rozproszone"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -13,6 +12,7 @@ fastapi = "^0.85.1"
 black = "^22.10.0"
 uvicorn = "^0.18.3"
 psycopg2-binary = "^2.9.4"
+pydantic = "^1.10.2"
 
 
 [build-system]
