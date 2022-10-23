@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2 class="text-center mt-5">Hello TodoApp {{msg}}</h2>
+    <h2 class="text-center mt-5">MicroServices TodoApp</h2>
 
     <!-- INPUT -->
     <div class="d-flex">
@@ -29,17 +29,17 @@
             'text-danger': task.status === 'To-do',
             'text-warning': task.status === 'In-progress',
             'text-success': task.status === 'Finished',
-            }" @click="changeStatus(index)">{{task.status}}</span>
+            }" @click="changeStatus(task.id)">{{task.status}}</span>
           </td>
           <td>
-            <div class="text-center" :class="['pointer']" @click="editTodo(index)">
+            <div class="text-center" :class="['pointer']" @click="editTodo(task.id)">
               <div>
                 <span class="fa fa-pen"> </span>
               </div>
             </div>
           </td>
           <td>
-            <div class="text-center" :class="['pointer']" @click="deleteTodo(index)">
+            <div class="text-center" :class="['pointer']" @click="deleteTodo(task.id)">
               <span class="fa fa-trash"> </span>
             </div>
           </td>
@@ -52,73 +52,80 @@
 
 
 <script>
-
+import axios from 'axios';
 export default {
   data() {
     return {
       task: '',
       editedTask: null,
+      editedTaskStatus: null,
       availableStatuses: ["To-do", "In-progress", "Finished"],
-      array_of_tasks: [
-        {
-          name: 'Go to the gym',
-          status: 'To-do',
-        },
-        {
-          name: 'Clean the house',
-          status: 'In-progress',
-        }
-      ],
-      msg: String
+      array_of_tasks: [],
     }
   },
 
   methods: {
-    submitTask() {
+    async submitTask() {
       if (this.task.length === 0) {
         return
       }
 
       if (this.editedTask === null) {
-        this.array_of_tasks.push(
-          {
-            name: this.task,
-            status: 'To-do'
-          }
-        )
+        try {
+          const response = await axios.post('http://localhost:80/api/create/todo', {
+            "name": this.task, "status": "To-do"
+          });
+          console.log(response);
+        } catch (error) {
+          console.log(error.response);
+        }
       } else {
-        this.array_of_tasks[this.editedTask].name = this.task
+        await axios.post(`http://localhost:80/api/update/todo/${this.editedTask}`, {
+          "name": this.task, "status": this.editedTaskStatus
+        })
         this.editedTask = null
+        this.editedTaskStatus = null
       }
 
       this.task = ''
+      this.refreshView()
     },
-    deleteTodo(index) {
-      this.array_of_tasks.splice(index, 1)
+    async deleteTodo(index) {
+      await axios.post(`http://localhost:80/api/delete/todo/${index}`);
+      this.refreshView()
     },
-    editTodo(index) {
-      this.task = this.array_of_tasks[index].name
-      this.editedTask = index
+    async editTodo(index) {
+      var todo_object = this.getTodoObject(index)
+      this.task = todo_object.name
+      this.editedTask = todo_object.id
+      this.editedTaskStatus = todo_object.status
     },
-    changeStatus(index) {
-      let newIndex = this.availableStatuses.indexOf(this.array_of_tasks[index].status)
+    async changeStatus(index) {
+      var todo_object = this.getTodoObject(index)
+      let newIndex = this.availableStatuses.indexOf(todo_object.status)
       if (newIndex == 2) {
         newIndex = 0
       } else {
         newIndex++
       }
-      this.array_of_tasks[index].status = this.availableStatuses[newIndex]
+      await axios.post(`http://localhost:80/api/update/todo/${todo_object.id}`, { "name": todo_object.name, "status": this.availableStatuses[newIndex] });
+      this.refreshView()
     },
-    // updateBackend() {
-    //   console.log(JSON.stringify(this.array_of_tasks))
-    // }
+    async refreshView() {
+      const response = await axios.get('http://localhost:80/api/get/todos/list');
+      this.array_of_tasks = response.data;
+    },
+    async getTodoObject(index) {
+      var todo_object = this.array_of_tasks.filter(obj => {
+        return obj.id === index
+      })
+      return todo_object[0]
+    }
   },
 
-  // created() {
-  //   // Simple GET request using axios
-  //   axios.get("http://localhost:80/api/get/todos/list")
-  //     .then(response => this.msg = response.data);
-  // }
+  async created() {
+    this.refreshView()
+  }
 }
 </script>
 
