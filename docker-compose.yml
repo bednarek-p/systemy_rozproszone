@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+ database_postgres:
+  image: postgres
+  container_name: database_postgres
+  ports:
+    - "5432:5432"
+  volumes:
+    - pgdata:/var/lib/postgresql/data
+  environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_DB=prisma
  app_backend:
   build: ./app
   container_name: app_backend
@@ -18,16 +29,5 @@ services:
   depends_on:
     - "app_backend"
   restart: always
- database:
-  image: postgres
-  container_name: database_postgres
-  ports:
-    - "5432:5432"
-  volumes:
-    - pgdata:/var/lib/postgresql/data
-  environment:
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=postgres
-    - POSTGRES_DB=prisma
 volumes:
   pgdata:

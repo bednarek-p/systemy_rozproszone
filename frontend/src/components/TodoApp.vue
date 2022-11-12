@@ -80,7 +80,7 @@ export default {
           console.log(error.response);
         }
       } else {
-        await axios.post(`http://localhost:80/api/update/todo/${this.editedTask}`, {
+        axios.post(`http://localhost:80/api/update/todo/${this.editedTask}`, {
           "name": this.task, "status": this.editedTaskStatus
         })
         this.editedTask = null
@@ -90,17 +90,17 @@ export default {
       this.task = ''
       this.refreshView()
     },
-    async deleteTodo(index) {
-      await axios.post(`http://localhost:80/api/delete/todo/${index}`);
+    deleteTodo(index) {
+      axios.post(`http://localhost:80/api/delete/todo/${index}`);
       this.refreshView()
     },
-    async editTodo(index) {
+    editTodo(index) {
       var todo_object = this.getTodoObject(index)
       this.task = todo_object.name
       this.editedTask = todo_object.id
       this.editedTaskStatus = todo_object.status
     },
-    async changeStatus(index) {
+    changeStatus(index) {
       var todo_object = this.getTodoObject(index)
       let newIndex = this.availableStatuses.indexOf(todo_object.status)
       if (newIndex == 2) {
@@ -108,14 +108,14 @@ export default {
       } else {
         newIndex++
       }
-      await axios.post(`http://localhost:80/api/update/todo/${todo_object.id}`, { "name": todo_object.name, "status": this.availableStatuses[newIndex] });
+      axios.post(`http://localhost:80/api/update/todo/${todo_object.id}`, { "name": todo_object.name, "status": this.availableStatuses[newIndex] });
       this.refreshView()
     },
     async refreshView() {
       const response = await axios.get('http://localhost:80/api/get/todos/list');
       this.array_of_tasks = response.data;
     },
-    async getTodoObject(index) {
+    getTodoObject(index) {
       var todo_object = this.array_of_tasks.filter(obj => {
         return obj.id === index
       })
